@@ -1,17 +1,9 @@
-# Hello World Script
+# Hello World
 
-## Functionality
+This is a simple Python script that prints "Hello, World!" to the console.
 
-This script prints "Hello, World!" to the console when executed.
+## Purpose
+The script demonstrates a basic Python program structure using a main function and the `if __name__ == "__main__":` guard.
 
-## Main Function Explanation
-
-The `main()` function is defined to contain the code that prints the message. It uses `print("Hello, World!")` to output the string.
-
-## Proper Structure Details
-
-The script follows Python best practices by defining a `main()` function and using the `if __name__ == "__main__": main()` guard. This allows the script to be run directly or imported as a module without executing the main code.
-
-## Run Instructions
-
-To execute the script, run the following command in the terminal:
+## Usage
+python hello.py

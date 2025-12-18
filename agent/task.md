@@ -1,6 +1,7 @@
-- Confirm `hello.py` exists in workspace root with correct content: `def main(): print("Hello, World!")` and `if __name__ == "__main__": main()`
-- If `README.md` exists, verify it explains the hello.py script, its structure, and execution
-- If `README.md` is incomplete or missing, create it with: title "# Hello World Script", description of functionality, main function explanation, proper structure details, and run instructions (`python hello.py`)
-- Test execution: run `python hello.py` and verify output is exactly "Hello, World!\n" with no errors
-- Add all changes to git staging: `git add hello.py README.md`
-- Commit with message: "Complete hello.py implementation with comprehensive README.md"
+- Confirm `hello.py` exists in workspace root with correct structure: `def main(): print("Hello, World!")` and `if __name__ == "__main__": main()`
+- Verify `README.md` exists with "# Hello World" title and description of the hello.py script
+- Test script execution: run `python hello.py` and confirm output is exactly "Hello, World!" with no extra text or errors
+- If README.md missing or incomplete, create/update it with: "# Hello World", script purpose, and "Usage: python hello.py" section
+- Add shebang `#!/usr/bin/env python3` as first line of `hello.py` for better portability
+- Commit changes with message "Complete hello.py with README and testing"
+- Run `git status` and `git log --oneline -5` to verify clean repo state and recent commits
