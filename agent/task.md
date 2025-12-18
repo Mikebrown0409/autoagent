@@ -1,0 +1,5 @@
+- Create a new file named `test_output.txt` in the current agent directory.
+- Write the string "System test successful - " followed by the current timestamp into `test_output.txt`.
+- Use a standard timestamp format such as `YYYY-MM-DD HH:MM:SS` (e.g., via Python's `datetime` module or shell `date` command).
+- Ensure the file contains exactly one line with the complete text.
+- Commit the new file with a message like "Add test_output.txt with system test confirmation".
