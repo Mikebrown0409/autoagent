@@ -1,6 +1,5 @@
-- Confirm `hello.py` exists in workspace root and contains exactly: `def main():\n    print("Hello, World!")\n\nif __name__ == "__main__":\n    main()`
-- If `hello.py` is missing or incorrect, create or overwrite it with the exact structure above
-- Verify `README.md` exists in workspace root with content: "# Hello World\n\nA simple Python script that prints 'Hello, World!' using a main function."
-- If `README.md` is missing or incomplete, create or overwrite it with the exact content above
-- Test execution by running `python hello.py` and confirm output is exactly "Hello, World!"
-- Commit changes with message "Finalized hello.py and README.md for Hello World script"
+- Verify `hello.py` exists in workspace root with exact content: `def main():\n    print("Hello, World!")\n\nif __name__ == "__main__":\n    main()`
+- If `hello.py` is missing or incorrect, create/overwrite it with the exact structure above
+- Create `README.md` in workspace root with content: "# Hello World\n\nA simple Python script that prints 'Hello, World!' using a main function."
+- Test `hello.py` by running `python hello.py` and confirm it prints "Hello, World!"
+- Commit changes with message: "Complete hello.py and README.md per instructions"
