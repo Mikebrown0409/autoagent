@@ -16,6 +16,7 @@ from config import (
     LOG_FILE,
     SLEEP_SECONDS,
     GIT_AUTO_COMMIT,
+    WORKSPACE_DIR,
 )
 from agents import GrokClient, PlannerAgent, CoderAgent, get_repo_summary
 
@@ -57,6 +58,10 @@ def apply_coder_changes(coder_output: str) -> dict:
     files_modified = []
     commands_run = []
     
+    # Get absolute paths
+    workspace_path = Path(WORKSPACE_DIR).resolve()
+    agent_path = Path(__file__).parent.resolve()
+    
     # Extract file modifications from code blocks with file paths
     # Pattern: ```language:path/to/file or ```:path/to/file
     file_pattern = r"```(?:\w+)?:([^\n\s]+)\n(.*?)```"
@@ -65,9 +70,25 @@ def apply_coder_changes(coder_output: str) -> dict:
     for filepath, content in matches:
         filepath = filepath.strip()
         if filepath:
+            # Resolve to absolute path in workspace
+            if Path(filepath).is_absolute():
+                target_path = Path(filepath)
+            else:
+                target_path = workspace_path / filepath
+            
+            # CRITICAL: Prevent writing to agent folder
             try:
-                write_file_safe(filepath, content.strip())
-                files_modified.append(filepath)
+                target_resolved = target_path.resolve()
+                if agent_path in target_resolved.parents or target_resolved == agent_path:
+                    print(f"⚠️  BLOCKED: Attempted to modify file in agent folder: {filepath}")
+                    print(f"   Agents should NOT modify files in the agent/ directory.")
+                    continue
+            except Exception:
+                pass  # If path resolution fails, continue with validation
+            
+            try:
+                write_file_safe(str(target_path), content.strip())
+                files_modified.append(str(target_path.relative_to(workspace_path)))
             except Exception as e:
                 print(f"Error writing {filepath}: {e}")
     
@@ -119,10 +140,12 @@ def apply_coder_changes(coder_output: str) -> dict:
 
 
 def git_diff() -> str:
-    """Get git diff of current changes."""
+    """Get git diff of current changes from workspace directory."""
     try:
+        workspace_path = Path(WORKSPACE_DIR).resolve()
         result = subprocess.run(
             ["git", "diff"],
+            cwd=str(workspace_path),
             capture_output=True,
             text=True,
             check=False,
@@ -133,11 +156,14 @@ def git_diff() -> str:
 
 
 def git_commit(message: str) -> bool:
-    """Commit changes with the given message."""
+    """Commit changes with the given message from workspace directory."""
     try:
+        workspace_path = Path(WORKSPACE_DIR).resolve()
+        
         # Check if there are changes to commit
         status_result = subprocess.run(
             ["git", "status", "--porcelain"],
+            cwd=str(workspace_path),
             capture_output=True,
             text=True,
             check=True,
@@ -145,9 +171,10 @@ def git_commit(message: str) -> bool:
         if not status_result.stdout.strip():
             return False  # No changes to commit
         
-        # Add all changes
+        # Add all changes (agent folder is protected by file writing logic)
         subprocess.run(
             ["git", "add", "-A"],
+            cwd=str(workspace_path),
             check=True,
             capture_output=True,
         )
@@ -155,6 +182,7 @@ def git_commit(message: str) -> bool:
         # Commit
         subprocess.run(
             ["git", "commit", "-m", message],
+            cwd=str(workspace_path),
             check=True,
             capture_output=True,
         )

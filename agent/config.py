@@ -1,5 +1,7 @@
 """Configuration for the autonomous two-agent coding system."""
 
+import os
+
 # Model configurations
 PLANNER_MODEL = "grok-4-1-fast-non-reasoning"
 CODER_MODEL = "grok-code-fast-1"
@@ -8,7 +10,11 @@ CODER_MODEL = "grok-code-fast-1"
 PLANNER_MAX_TOKENS = 2000
 CODER_MAX_TOKENS = 8000
 
-# File paths
+# Workspace directory (where agents will modify files)
+# Set to parent directory by default - agents should NOT modify files in the agent/ folder
+WORKSPACE_DIR = os.path.join(os.path.dirname(__file__), "..")
+
+# File paths (relative to agent directory for control files)
 CONTROL_FILE = "control.txt"
 INSTRUCTIONS_FILE = "instructions.md"
 TASK_FILE = "task.md"

@@ -4,7 +4,7 @@ import os
 import subprocess
 from pathlib import Path
 from typing import Optional
-from config import PLANNER_MODEL, CODER_MODEL, PLANNER_MAX_TOKENS, CODER_MAX_TOKENS
+from config import PLANNER_MODEL, CODER_MODEL, PLANNER_MAX_TOKENS, CODER_MAX_TOKENS, WORKSPACE_DIR
 from prompts import (
     PLANNER_SYSTEM_PROMPT,
     CODER_SYSTEM_PROMPT,
@@ -139,20 +139,26 @@ class CoderAgent:
 
 
 def get_repo_summary() -> str:
-    """Get a summary of the current repository state."""
+    """Get a summary of the current repository state from the workspace directory."""
     try:
-        # Get list of files
+        workspace_path = Path(WORKSPACE_DIR).resolve()
+        
+        # Get list of files (excluding agent folder)
         result = subprocess.run(
             ["git", "ls-files"],
+            cwd=str(workspace_path),
             capture_output=True,
             text=True,
             check=False,
         )
         files = result.stdout.strip().split("\n") if result.stdout else []
+        # Filter out agent folder files
+        files = [f for f in files if not f.startswith("agent/")]
         
         # Get recent git log
         log_result = subprocess.run(
             ["git", "log", "--oneline", "-5"],
+            cwd=str(workspace_path),
             capture_output=True,
             text=True,
             check=False,
@@ -162,13 +168,15 @@ def get_repo_summary() -> str:
         # Get git status
         status_result = subprocess.run(
             ["git", "status", "--short"],
+            cwd=str(workspace_path),
             capture_output=True,
             text=True,
             check=False,
         )
         status = status_result.stdout.strip() if status_result.stdout else "Working tree clean"
         
-        summary = f"""Files in repository: {len(files)} files
+        summary = f"""Workspace directory: {workspace_path}
+Files in repository (excluding agent/): {len(files)} files
 Recent commits:
 {recent_commits}
 

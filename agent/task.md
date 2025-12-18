@@ -1,5 +1,7 @@
-- Run `git add log.md memory.md task.md` to stage the modified files.
-- Commit the changes with the message "Update log.md, memory.md, and task.md with latest progress".
+- Run `git add agent/` to stage all modified files in the agent directory.
+- Commit the changes with the message "Stage agent directory modifications after system test".
 - Run `git status` to confirm clean working directory.
-- Run `git log --oneline -5` to verify the latest commits reflect all updates including test file, log, memory, and task files.
-- Verify `test_output.txt` still exists and contains the correct "System test successful - [timestamp]" format.
+- Run `git log --oneline -5` to verify commits include test file, log/memory updates, and agent staging.
+- Confirm `test_output.txt` still exists at workspace root with correct "System test successful - [timestamp]" format.
+- Update `log.md` to document completion of all system tests and git staging of agent files.
+- Update `memory.md` with summary of final repository state and clean status.
