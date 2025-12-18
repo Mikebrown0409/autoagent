@@ -1,7 +1,8 @@
-- Verify `hello.py` exists in workspace root and contains exactly: `def main():\n    print("Hello, World!")\n\nif __name__ == "__main__":\n    main()`
-- If `hello.py` is missing or has incorrect content, create/overwrite it with the exact structure above
-- Test `hello.py` by running `python hello.py` in the workspace root and capture output
-- Confirm test output exactly matches "Hello, World!" (ignoring any extra whitespace/newlines)
-- If test fails, debug and fix `hello.py` to ensure it prints correctly
-- Create `README.md` in workspace root with content: "# Hello World\n\nA simple Python script that prints 'Hello, World!' using a main function and proper if __name__ guard."
-- Verify all files are correctly formatted and committed with message "Complete hello.py implementation with README"
+- Verify contents of `hello.py` in workspace root match exactly: `def main():\n    print("Hello, World!")\n\nif __name__ == "__main__":\n    main()`
+- If `hello.py` missing or incorrect, create/overwrite with exact code above
+- Run `python hello.py` in workspace root and capture console output
+- Confirm captured output is exactly "Hello, World!" (ignore trailing newline/ whitespace)
+- If output mismatches, debug and fix `hello.py` to print precisely "Hello, World!"
+- Add shebang `#!/usr/bin/env python3` as first line of `hello.py`
+- Create `README.md` explaining script purpose and usage
+- Commit changes with message "Finalize hello.py with verification and README"
