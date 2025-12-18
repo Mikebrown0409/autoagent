@@ -66,6 +66,10 @@ class GrokClient:
                 ],
                 max_tokens=max_tokens,
             )
+            # Log token usage if available
+            if hasattr(response, 'usage'):
+                usage = response.usage
+                print(f"  📊 Token usage: {usage.prompt_tokens} prompt + {usage.completion_tokens} completion = {usage.total_tokens} total")
             return response.choices[0].message.content
         except ImportError:
             # Fallback to HTTP requests
@@ -87,7 +91,12 @@ class GrokClient:
             
             response = requests.post(url, headers=headers, json=data)
             response.raise_for_status()
-            return response.json()["choices"][0]["message"]["content"]
+            result = response.json()
+            # Log token usage if available
+            if "usage" in result:
+                usage = result["usage"]
+                print(f"  📊 Token usage: {usage.get('prompt_tokens', 0)} prompt + {usage.get('completion_tokens', 0)} completion = {usage.get('total_tokens', 0)} total")
+            return result["choices"][0]["message"]["content"]
 
 
 class PlannerAgent:

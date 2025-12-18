@@ -1,5 +1,8 @@
-- Create file `hello.py` in workspace root
-- Add `def main():` function that prints "Hello, World!"
-- Add `if __name__ == "__main__":` guard that calls `main()`
-- Ensure proper indentation and no extra imports
-- Save the file with exactly 6 lines of code
+- Confirm `hello.py` exists in workspace root with exact content: `def main(): print("Hello, World!")` followed by `if __name__ == "__main__": main()`
+- If `hello.py` missing or incorrect, create/overwrite `hello.py` in workspace root with exact content above
+- Test run `python hello.py` and verify output is exactly "Hello, World!" with no extra text or errors
+- If test passes, stage file with `git add hello.py`
+- Commit with message: "Add hello.py with main function printing Hello, World!"
+- Verify git status shows clean working directory (no uncommitted changes in root)
+- Run `python hello.py` one final time to confirm functionality
+- Document success in a new file `README.md` in workspace root with: "# Hello World App\nSimple Python script that prints 'Hello, World!' using main() function."

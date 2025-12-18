@@ -55,9 +55,14 @@ RECENT PROGRESS (from memory.md - for context only, do NOT generate tasks to mod
 REPOSITORY STATE:
 {repo_summary}
 
-CRITICAL: All tasks must be for files in the workspace root, NOT in the agent/ folder. Never generate tasks to modify log.md, memory.md, task.md, control.txt, or instructions.md.
+CRITICAL RULES:
+- All tasks must be for files in the workspace root, NOT in the agent/ folder
+- Never generate tasks to modify log.md, memory.md, task.md, control.txt, or instructions.md
+- If the instructions have already been completed (check recent progress and repo state), generate a task to verify completion or output "All tasks complete - no new tasks needed"
+- Only generate NEW tasks that haven't been completed yet
+- Don't repeat verification tasks if they were already done in recent iterations
 
-Generate a concise task list (max 10 bullet points) for the Coder Agent to implement. Each task should be specific and actionable. Output ONLY the markdown list, nothing else."""
+Generate a concise task list (max 10 bullet points) for the Coder Agent to implement. Each task should be specific and actionable. If everything is complete, say so. Output ONLY the markdown list, nothing else."""
 
 def get_coder_prompt(task: str, memory: str, repo_summary: str) -> str:
     """Generate the full prompt for the Coder Agent."""

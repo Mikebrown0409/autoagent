@@ -108,10 +108,13 @@ def apply_coder_changes(coder_output: str) -> dict:
         command = command.strip()
         if command:
             try:
+                workspace_path = Path(WORKSPACE_DIR).resolve()
                 print(f"Executing: {command}")
+                print(f"  (from workspace: {workspace_path})")
                 result = subprocess.run(
                     command,
                     shell=True,
+                    cwd=str(workspace_path),  # Run commands from workspace directory
                     capture_output=True,
                     text=True,
                     timeout=300,  # 5 minute timeout
