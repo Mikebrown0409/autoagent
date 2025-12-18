@@ -42,9 +42,10 @@ The system operates in a continuous loop, reading instructions, generating tasks
    git init
    ```
 
-4. **Configure the system:**
-   - Edit `instructions.md` with your goals
-   - Set `control.txt` to `RUN` or `PAUSE`
+4. **Optional: Pre-configure (or let the system prompt you):**
+   - You can edit `instructions.md` with your goals, OR
+   - The system will prompt you for a project query when you run it
+   - Set `control.txt` to `RUN` or `PAUSE` (defaults to RUN)
 
 5. **Run the orchestrator:**
    
@@ -72,7 +73,7 @@ The system operates in a continuous loop, reading instructions, generating tasks
     ├── agents.py         # Planner + Coder agent logic
     ├── prompts.py        # System prompts
     ├── config.py        # Model names, token limits
-    ├── instructions.md   # Human-editable goals (EDIT THIS)
+    ├── instructions.md   # Project goal (auto-set from initial query, can be edited)
     ├── task.md           # Planner output (auto-generated)
     ├── memory.md         # Rolling summary of progress (auto-generated)
     ├── control.txt       # RUN or PAUSE (EDIT THIS)
