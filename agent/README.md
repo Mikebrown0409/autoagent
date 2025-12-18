@@ -52,17 +52,25 @@ The system operates in a continuous loop, reading instructions, generating tasks
    Option 1: Provide query as command line argument:
    ```bash
    cd agent
-   python main.py "Build a REST API for a todo list"
+   python3 main.py "Build a REST API for a todo list"
    ```
    
    Option 2: Interactive prompt:
    ```bash
    cd agent
-   python main.py
+   python3 main.py
    # Then enter your project query when prompted
    ```
    
    The Planner will generate an initial plan, show it to you for approval, then start autonomous execution.
+
+**Running in Background:**
+If you want to run it in the background:
+```bash
+cd agent
+nohup python3 -u main.py "Your project query" > agent.log 2>&1 &
+```
+Then check status with: `python3 status.py`
 
 ## File Structure
 
@@ -78,6 +86,7 @@ The system operates in a continuous loop, reading instructions, generating tasks
     ├── memory.md         # Rolling summary of progress (auto-generated)
     ├── control.txt       # RUN or PAUSE (EDIT THIS)
     ├── log.md            # Recent agent outputs (auto-generated)
+    ├── status.py          # Status checker script
     └── README.md
 ```
 
@@ -171,7 +180,17 @@ Edit `config.py` to adjust:
 - Check `log.md` for agent errors
 
 **Want to stop the system**
-- Press `Ctrl+C` or set `control.txt` to `PAUSE`
+- If running in foreground: Press `Ctrl+C`
+- If running in background: 
+  - Check status: `python3 status.py`
+  - Set `control.txt` to `PAUSE` (system pauses on next check)
+  - Or kill process: `pkill -f 'python3.*main.py'` or `pkill -f 'python.*main.py'`
+  - Or find PID: `ps aux | grep main.py` then `kill <PID>`
+
+**Check if system is running**
+```bash
+python3 status.py
+```
 
 ## License
 
