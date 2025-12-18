@@ -1,7 +1,6 @@
-- Confirm `hello.py` exists in workspace root with correct structure: `def main(): print("Hello, World!")` and `if __name__ == "__main__": main()`
-- Verify `README.md` exists with "# Hello World" title and description of the hello.py script
-- Test script execution: run `python hello.py` and confirm output is exactly "Hello, World!" with no extra text or errors
-- If README.md missing or incomplete, create/update it with: "# Hello World", script purpose, and "Usage: python hello.py" section
-- Add shebang `#!/usr/bin/env python3` as first line of `hello.py` for better portability
-- Commit changes with message "Complete hello.py with README and testing"
-- Run `git status` and `git log --oneline -5` to verify clean repo state and recent commits
+- Verify contents of `hello.py` match exact structure: `def main():` with `print("Hello, World!")` and `if __name__ == "__main__": main()`
+- Confirm `README.md` exists in workspace root with title "# Hello World" and description of `hello.py` script purpose
+- If `README.md` missing or incomplete, create it with content: "# Hello World\n\nA simple Python script that prints 'Hello, World!' using a main function."
+- Test execution: run `python hello.py` and verify output is exactly "Hello, World!\n" with no errors or extra text
+- If any issues found, fix `hello.py` to ensure proper indentation and exact output
+- Commit changes with message "Finalize hello.py and README.md implementation"

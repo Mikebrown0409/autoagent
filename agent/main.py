@@ -262,12 +262,94 @@ def update_log(planner_output: str, coder_output: str) -> None:
     write_file_safe(LOG_FILE, new_log)
 
 
+def get_user_query() -> str:
+    """Get initial project query from user via command line or interactive prompt."""
+    # Check command line arguments
+    if len(sys.argv) > 1:
+        # Query provided as command line argument
+        query = " ".join(sys.argv[1:])
+        print(f"📝 Project query from command line: {query}\n")
+        return query
+    
+    # Interactive prompt
+    print("="*60)
+    print("Autonomous Two-Agent Coding System")
+    print("="*60)
+    print("\nEnter your project goal/query (or leave empty to use instructions.md):")
+    print("Example: 'Build a REST API for a todo list'")
+    print("Example: 'Create a web scraper for news articles'\n")
+    
+    query = input("> ").strip()
+    
+    if not query:
+        # Fall back to instructions.md if it exists
+        existing = read_file_safe(INSTRUCTIONS_FILE, "")
+        if existing.strip():
+            print(f"\nUsing existing instructions from {INSTRUCTIONS_FILE}")
+            return existing.strip()
+        else:
+            print("\nNo query provided and no instructions.md found. Exiting.")
+            sys.exit(1)
+    
+    return query
+
+
+def get_initial_plan_and_confirmation(planner: PlannerAgent, query: str) -> str:
+    """Get initial plan from Planner and confirm with user."""
+    print("\n" + "="*60)
+    print("[Planner Agent] Generating Initial Project Plan...")
+    print("="*60)
+    print("📤 Sending request to Planner Agent (this may take a moment)...")
+    sys.stdout.flush()
+    
+    try:
+        # Get initial plan (no previous work, empty memory)
+        repo_summary = get_repo_summary()
+        initial_plan = planner.generate_tasks(query, "", repo_summary, "")
+        
+        # Display the plan
+        print("\n" + "="*60)
+        print("📋 INITIAL PROJECT PLAN")
+        print("="*60)
+        print(initial_plan)
+        print("="*60)
+        
+        # Get user confirmation
+        print("\n🤔 Review the plan above.")
+        print("Options:")
+        print("  [y/yes] - Approve and start autonomous execution")
+        print("  [n/no]  - Reject and exit")
+        print("  [e/edit] - Edit the query and regenerate plan")
+        print()
+        
+        while True:
+            response = input("Approve this plan? (y/n/e): ").strip().lower()
+            
+            if response in ['y', 'yes']:
+                print("\n✅ Plan approved! Starting autonomous execution...\n")
+                return initial_plan
+            elif response in ['n', 'no']:
+                print("\n❌ Plan rejected. Exiting.")
+                sys.exit(0)
+            elif response in ['e', 'edit']:
+                new_query = input("\nEnter revised project query: ").strip()
+                if new_query:
+                    return get_initial_plan_and_confirmation(planner, new_query)
+                else:
+                    print("Query cannot be empty. Try again.")
+            else:
+                print("Please enter 'y', 'n', or 'e'")
+    
+    except Exception as e:
+        print(f"❌ Error generating initial plan: {e}")
+        import traceback
+        traceback.print_exc()
+        sys.exit(1)
+
+
 def main_loop():
     """Main orchestrator loop."""
     print("Starting autonomous two-agent coding system...")
-    print(f"Control file: {CONTROL_FILE}")
-    print(f"Instructions file: {INSTRUCTIONS_FILE}")
-    print("Press Ctrl+C to stop\n")
     
     # Initialize agents
     try:
@@ -278,6 +360,22 @@ def main_loop():
         print(f"Error initializing agents: {e}")
         print("Make sure XAI_API_KEY environment variable is set.")
         return
+    
+    # Get initial query and plan
+    query = get_user_query()
+    confirmed_plan = get_initial_plan_and_confirmation(planner, query)
+    
+    # Save confirmed plan to instructions.md
+    write_file_safe(INSTRUCTIONS_FILE, query)
+    write_file_safe(TASK_FILE, confirmed_plan)
+    
+    print(f"💾 Saved project query to {INSTRUCTIONS_FILE}")
+    print(f"💾 Saved initial plan to {TASK_FILE}")
+    print(f"\n📁 Control file: {CONTROL_FILE} (set to PAUSE to stop)")
+    print("Press Ctrl+C to stop\n")
+    print("="*60)
+    print("🚀 AUTONOMOUS EXECUTION STARTED")
+    print("="*60 + "\n")
     
     iteration = 0
     last_coder_summary = ""  # Track what Coder completed last iteration
@@ -298,12 +396,11 @@ def main_loop():
             
             print("System is RUNNING.")
             
-            # 2. Read instructions
+            # 2. Read instructions (project goal)
             instructions = read_file_safe(INSTRUCTIONS_FILE, "")
             if not instructions.strip():
-                print("No instructions found. Waiting...")
-                time.sleep(SLEEP_SECONDS)
-                continue
+                print("⚠️  No project goal found. Exiting.")
+                break
             
             # 3. Read memory
             memory = read_file_safe(MEMORY_FILE, "")

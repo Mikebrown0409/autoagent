@@ -47,10 +47,21 @@ The system operates in a continuous loop, reading instructions, generating tasks
    - Set `control.txt` to `RUN` or `PAUSE`
 
 5. **Run the orchestrator:**
+   
+   Option 1: Provide query as command line argument:
+   ```bash
+   cd agent
+   python main.py "Build a REST API for a todo list"
+   ```
+   
+   Option 2: Interactive prompt:
    ```bash
    cd agent
    python main.py
+   # Then enter your project query when prompted
    ```
+   
+   The Planner will generate an initial plan, show it to you for approval, then start autonomous execution.
 
 ## File Structure
 
@@ -100,13 +111,20 @@ git reset --hard <commit>  # Rollback to specific commit
 
 ## How It Works
 
+### Initial Setup
+1. **Start System**: Run `python main.py` with a project query (or enter interactively)
+2. **Planner Generates Plan**: Planner Agent creates initial strategic plan
+3. **User Confirmation**: Review and approve the plan (y/n/e to edit)
+4. **Autonomous Execution**: Once approved, system runs autonomously
+
+### Main Loop
 1. **Read Control**: Checks `control.txt` for RUN/PAUSE
-2. **Read Instructions**: Loads goals from `instructions.md`
-3. **Planner Agent**: Generates task list → `task.md`
+2. **Read Project Goal**: Loads goal from `instructions.md` (set during initial setup)
+3. **Planner Agent**: Reviews Coder's work, plans next strategic steps → `task.md`
 4. **Coder Agent**: Implements tasks → modifies files
 5. **Git Commit**: Shows diff, commits with descriptive message
 6. **Update Memory**: Records progress in `memory.md`
-7. **Repeat**: Sleeps and loops
+7. **Repeat**: Planner reviews progress and plans next steps
 
 ## Coder Agent Output Format
 
