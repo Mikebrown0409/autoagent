@@ -106,10 +106,10 @@ class PlannerAgent:
         self.client = client
     
     def generate_tasks(
-        self, instructions: str, memory: str, repo_summary: str
+        self, instructions: str, memory: str, repo_summary: str, last_coder_summary: str = ""
     ) -> str:
-        """Generate a task list from instructions and context."""
-        prompt = get_planner_prompt(instructions, memory, repo_summary)
+        """Generate a task list from instructions and context, with feedback from Coder."""
+        prompt = get_planner_prompt(instructions, memory, repo_summary, last_coder_summary)
         
         try:
             response = self.client.call_model(

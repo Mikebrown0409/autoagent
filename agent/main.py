@@ -280,6 +280,7 @@ def main_loop():
         return
     
     iteration = 0
+    last_coder_summary = ""  # Track what Coder completed last iteration
     
     try:
         while True:
@@ -310,14 +311,18 @@ def main_loop():
             # 4. Get repo summary
             repo_summary = get_repo_summary()
             
-            # 5. Planner Agent
+            # 5. Planner Agent (with feedback from last Coder work)
             print("\n" + "="*60)
-            print("[Planner Agent] Generating tasks...")
+            print("[Planner Agent] Strategic Planning...")
             print("="*60)
+            if last_coder_summary:
+                print("📋 Reviewing Coder's previous work and planning next steps...")
+            else:
+                print("📋 Starting new project - planning initial steps...")
             print("📤 Sending request to Planner Agent (this may take a moment)...")
             sys.stdout.flush()
             try:
-                planner_output = planner.generate_tasks(instructions, memory, repo_summary)
+                planner_output = planner.generate_tasks(instructions, memory, repo_summary, last_coder_summary)
                 write_file_safe(TASK_FILE, planner_output)
                 print("✓ Tasks generated and written to task.md")
                 print(f"\n📋 Generated Tasks Preview:\n{'-'*60}")
@@ -363,10 +368,16 @@ def main_loop():
                     for cmd in changes['commands_run']:
                         print(f"  - {cmd['command']}")
                 
+                # Store Coder's summary for next Planner iteration
+                last_coder_summary = changes['summary']
+                print(f"\n💬 Coder Summary (will be reviewed by Planner next iteration):")
+                print(f"   {last_coder_summary[:200]}...")
+                
             except Exception as e:
                 print(f"Error in Coder Agent: {e}")
                 coder_output = f"Error: {str(e)}"
                 changes = {"files_modified": [], "commands_run": [], "summary": coder_output}
+                last_coder_summary = changes['summary']
             
             # 7. Git safety
             if GIT_AUTO_COMMIT and changes["files_modified"]:

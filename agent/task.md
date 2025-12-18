@@ -1,5 +1,5 @@
-- Verify `hello.py` exists in workspace root and contains exactly: `def main(): print("Hello, World!")` and `if __name__ == "__main__": main()`
-- If `hello.py` is missing or incorrect, create/overwrite `hello.py` with:
+- Verify `hello.py` in workspace root contains exactly: `def main(): print("Hello, World!")\nif __name__ == "__main__": main()`
+- If `hello.py` differs, overwrite with precise content:
 ```
 def main():
     print("Hello, World!")
@@ -7,9 +7,7 @@ def main():
 if __name__ == "__main__":
     main()
 ```
-- Execute `python hello.py` and capture console output
-- Confirm execution output is exactly "Hello, World!" with no extra text or errors
-- Create `README.md` in workspace root with content: "# Hello World App\n\nSimple Python script that prints 'Hello, World!' using a main function."
-- Stage all changes with `git add .`
-- Commit with `git commit -m "Complete hello.py implementation with README"`
-- Push to remote with `git push`
+- Execute `python hello.py` in workspace root and confirm output is exactly "Hello, World!" with no extra text or errors
+- Complete `README.md` in workspace root with full explanation of hello.py functionality and usage
+- Add to `README.md`: "## Usage\nRun: `python hello.py`"
+- Commit changes with message: "Finalize hello.py and complete README.md"
