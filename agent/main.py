@@ -1,12 +1,16 @@
 """Main orchestrator loop for the autonomous two-agent coding system."""
 
 import os
+import sys
 import time
 import re
 import subprocess
 from datetime import datetime
 from pathlib import Path
 from typing import Optional
+
+# Ensure unbuffered output for real-time visibility
+sys.stdout.reconfigure(line_buffering=True) if hasattr(sys.stdout, 'reconfigure') else None
 
 from config import (
     CONTROL_FILE,
@@ -79,9 +83,12 @@ def apply_coder_changes(coder_output: str) -> dict:
             # CRITICAL: Prevent writing to agent folder
             try:
                 target_resolved = target_path.resolve()
-                if agent_path in target_resolved.parents or target_resolved == agent_path:
+                agent_resolved = agent_path.resolve()
+                # Check if target is inside agent folder
+                if str(target_resolved).startswith(str(agent_resolved)):
                     print(f"⚠️  BLOCKED: Attempted to modify file in agent folder: {filepath}")
                     print(f"   Agents should NOT modify files in the agent/ directory.")
+                    print(f"   Protected files: log.md, memory.md, task.md, control.txt, instructions.md, and all agent/ files")
                     continue
             except Exception:
                 pass  # If path resolution fails, continue with validation
@@ -301,26 +308,57 @@ def main_loop():
             repo_summary = get_repo_summary()
             
             # 5. Planner Agent
-            print("\n[Planner Agent] Generating tasks...")
+            print("\n" + "="*60)
+            print("[Planner Agent] Generating tasks...")
+            print("="*60)
+            print("📤 Sending request to Planner Agent (this may take a moment)...")
+            sys.stdout.flush()
             try:
                 planner_output = planner.generate_tasks(instructions, memory, repo_summary)
                 write_file_safe(TASK_FILE, planner_output)
-                print("Tasks generated and written to task.md")
+                print("✓ Tasks generated and written to task.md")
+                print(f"\n📋 Generated Tasks Preview:\n{'-'*60}")
+                print(planner_output[:500])
+                if len(planner_output) > 500:
+                    print("...")
+                print("-"*60 + "\n")
+                sys.stdout.flush()
             except Exception as e:
-                print(f"Error in Planner Agent: {e}")
+                print(f"❌ Error in Planner Agent: {e}")
+                import traceback
+                traceback.print_exc()
+                sys.stdout.flush()
                 time.sleep(SLEEP_SECONDS)
                 continue
             
             # 6. Coder Agent
-            print("\n[Coder Agent] Implementing tasks...")
+            print("\n" + "="*60)
+            print("[Coder Agent] Implementing tasks...")
+            print("="*60)
+            print("📤 Sending request to Coder Agent (this may take a moment)...")
+            sys.stdout.flush()
             try:
                 task = read_file_safe(TASK_FILE, "")
                 coder_output = coder.implement_task(task, memory, repo_summary)
+                print("✓ Coder Agent response received")
+                print(f"\n💻 Coder Output Preview:\n{'-'*60}")
+                print(coder_output[:800])
+                if len(coder_output) > 800:
+                    print("...")
+                print("-"*60 + "\n")
+                sys.stdout.flush()
                 
                 # Apply changes
+                print("\n[Orchestrator] Parsing and applying changes...")
                 changes = apply_coder_changes(coder_output)
-                print(f"\nFiles modified: {len(changes['files_modified'])}")
-                print(f"Commands executed: {len(changes['commands_run'])}")
+                print(f"✓ Files modified: {len(changes['files_modified'])}")
+                if changes['files_modified']:
+                    for f in changes['files_modified']:
+                        print(f"  - {f}")
+                print(f"✓ Commands executed: {len(changes['commands_run'])}")
+                if changes['commands_run']:
+                    for cmd in changes['commands_run']:
+                        print(f"  - {cmd['command']}")
                 
             except Exception as e:
                 print(f"Error in Coder Agent: {e}")

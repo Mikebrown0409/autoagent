@@ -1,7 +1,5 @@
-- Run `git add agent/` to stage all modified files in the agent directory.
-- Commit the changes with the message "Stage agent directory modifications after system test".
-- Run `git status` to confirm clean working directory.
-- Run `git log --oneline -5` to verify commits include test file, log/memory updates, and agent staging.
-- Confirm `test_output.txt` still exists at workspace root with correct "System test successful - [timestamp]" format.
-- Update `log.md` to document completion of all system tests and git staging of agent files.
-- Update `memory.md` with summary of final repository state and clean status.
+- Create file `hello.py` in workspace root
+- Add `def main():` function that prints "Hello, World!"
+- Add `if __name__ == "__main__":` guard that calls `main()`
+- Ensure proper indentation and no extra imports
+- Save the file with exactly 6 lines of code
