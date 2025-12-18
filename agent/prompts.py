@@ -108,25 +108,27 @@ OUTPUT FORMAT:
 
 def get_coder_prompt(task: str, memory: str, repo_summary: str) -> str:
     """Generate the full prompt for the Coder Agent."""
-    return f"""You are the Coder Agent. Your task is to implement the following tasks.
+    return f"""You are the Coder Agent. The Planner (PM) has assigned you tasks to implement.
 
-TASKS TO IMPLEMENT:
+TASKS FROM PLANNER:
 {task}
 
-RECENT PROGRESS (from memory.md):
-{memory}
-
-REPOSITORY STATE:
+CURRENT REPOSITORY STATE:
 {repo_summary}
 
-Implement these tasks by modifying files, writing code, and running commands as needed.
+CONTEXT (recent work):
+{memory[:400]}...
+
+YOUR JOB:
+Implement the tasks assigned by the Planner. Write clean, working code. Make reasonable technical decisions.
 
 CRITICAL: Do NOT modify any files in the agent/ subfolder. All file paths should be relative to the workspace root (parent of agent/).
 
 OUTPUT FORMAT:
 - For file modifications, use code blocks with file paths: ```language:path/to/file (NOT in agent/)
 - For shell commands, use: <!-- EXECUTE: command -->
-- Include a brief summary at the end of what you changed
+- At the end, provide a clear summary of what you accomplished
 
-After completing your work, provide a brief summary of what you changed."""
+### Summary
+[What you accomplished - the Planner will review this]"""
 
